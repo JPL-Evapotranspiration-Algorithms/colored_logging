@@ -3,7 +3,7 @@ requires = ["setuptools>=60", "setuptools-scm>=8.0", "wheel"]
 
 [project]
 name = "colored_logging"
-version = "1.0.0"
+version = "1.0.1"
 description = "formats logging messages in color"
 readme = "README.md"
 authors = [
