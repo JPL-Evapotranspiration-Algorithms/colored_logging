@@ -7,12 +7,15 @@ from typing import Union, Any
 
 from termcolor import colored
 
+# Default settings for stripping ANSI escape sequences
 DEFAULT_STRIP_CONSOLE = False
 DEFAULT_STRIP_FILE = True
 
+# Default format and date format for logging messages
 DEFAULT_FORMAT = "[%(asctime)s %(levelname)s] %(message)s"
 DEFAULT_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
+# Color settings for different types of text
 FILE = "blue"
 DIR = "blue"
 TIME = "green"
@@ -20,42 +23,109 @@ PLACE = "yellow"
 VALUE = "cyan"
 NAME = "yellow"
 
+# Regular expression to match ANSI escape sequences
 ANSI_ESCAPE = re.compile(r'\x1b[^m]*m')
 
-
 def strip(text: str) -> str:
+    """
+    Strip ANSI escape sequences from the given text.
+
+    Args:
+        text (str): The text to strip.
+
+    Returns:
+        str: The stripped text.
+    """
     return str(ANSI_ESCAPE.sub('', str(text)))
 
-
 def URL(text: Union[str, Any]) -> str:
-    return str(colored(str(text), FILE))
+    """
+    Color the given text as a URL.
 
+    Args:
+        text (Union[str, Any]): The text to color.
+
+    Returns:
+        str: The colored text.
+    """
+    return str(colored(str(text), FILE))
 
 def file(text: Union[str, Any]) -> str:
+    """
+    Color the given text as a file.
+
+    Args:
+        text (Union[str, Any]): The text to color.
+
+    Returns:
+        str: The colored text.
+    """
     return str(colored(str(text), FILE))
 
-
 def dir(text: Union[str, Any]) -> str:
+    """
+    Color the given text as a directory.
+
+    Args:
+        text (Union[str, Any]): The text to color.
+
+    Returns:
+        str: The colored text.
+    """
     return str(colored(str(text), DIR))
 
-
 def time(text: Union[str, Any]) -> str:
+    """
+    Color the given text as time.
+
+    Args:
+        text (Union[str, Any]): The text to color.
+
+    Returns:
+        str: The colored text.
+    """
     return str(colored(str(text), TIME))
 
-
 def place(text: Union[str, Any]) -> str:
+    """
+    Color the given text as a place.
+
+    Args:
+        text (Union[str, Any]): The text to color.
+
+    Returns:
+        str: The colored text.
+    """
     return str(colored(str(text), PLACE))
 
-
 def val(text: Union[str, Any]) -> str:
+    """
+    Color the given text as a value.
+
+    Args:
+        text (Union[str, Any]): The text to color.
+
+    Returns:
+        str: The colored text.
+    """
     return str(colored(str(text), VALUE))
 
-
 def name(text: Union[str, Any]) -> str:
+    """
+    Color the given text as a name.
+
+    Args:
+        text (Union[str, Any]): The text to color.
+
+    Returns:
+        str: The colored text.
+    """
     return str(colored(str(text), NAME))
 
-
 class Formatter(logging.Formatter):
+    """
+    Custom logging formatter that supports stripping and coloring of log messages.
+    """
     def __init__(
             self,
             *args,
@@ -64,6 +134,15 @@ class Formatter(logging.Formatter):
             strip: bool = DEFAULT_STRIP_CONSOLE,
             color: str = None,
             **kwargs):
+        """
+        Initialize the Formatter.
+
+        Args:
+            fmt (str): Log message format.
+            datefmt (str): Date format.
+            strip (bool): Whether to strip ANSI escape sequences.
+            color (str): Color to apply to log messages.
+        """
         super(Formatter, self).__init__(
             *args,
             fmt=fmt,
@@ -75,6 +154,15 @@ class Formatter(logging.Formatter):
         self.color = color
 
     def format(self, record) -> str:
+        """
+        Format the log record.
+
+        Args:
+            record: The log record to format.
+
+        Returns:
+            str: The formatted log message.
+        """
         text = super(Formatter, self).format(record)
 
         if self.strip or self.color is not None:
@@ -85,19 +173,31 @@ class Formatter(logging.Formatter):
 
         return text
 
-
 def configure(
         filename: str = None,
         format: str = DEFAULT_FORMAT,
         datefmt: str = DEFAULT_DATE_FORMAT,
         strip_console: bool = DEFAULT_STRIP_CONSOLE,
         strip_file: bool = DEFAULT_STRIP_FILE):
+    """
+    Configure the logging system.
+
+    Args:
+        filename (str): The log file name.
+        format (str): Log message format.
+        datefmt (str): Date format.
+        strip_console (bool): Whether to strip ANSI escape sequences in console output.
+        strip_file (bool): Whether to strip ANSI escape sequences in file output.
+    """
     if isinstance(filename, str) and filename.startswith("~"):
         filename = expanduser(filename)
 
     handlers = []
 
     class InfoFilter(logging.Filter):
+        """
+        Filter for INFO level log messages.
+        """
         def filter(self, record):
             return record.levelno == logging.INFO
 
@@ -133,6 +233,9 @@ def configure(
         handlers.append(info_file_handler)
 
     class WarningFilter(logging.Filter):
+        """
+        Filter for WARNING level log messages.
+        """
         def filter(self, record):
             return record.levelno == logging.WARNING
 
@@ -167,6 +270,9 @@ def configure(
         handlers.append(warning_file_handler)
 
     class ErrorFilter(logging.Filter):
+        """
+        Filter for ERROR level log messages.
+        """
         def filter(self, record):
             return record.levelno == logging.ERROR
 
@@ -208,6 +314,5 @@ def configure(
         handlers=handlers
         # force=True
     )
-
 
 configure()
